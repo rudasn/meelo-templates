@@ -1,0 +1,655 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>meelo-templates</title>
+	
+	<link rel="stylesheet" href="api.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	
+	
+	<script type="text/javascript" src='http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js'></script>
+
+	<script src="meelo-template.js" type="text/javascript" charset="utf-8"></script>
+	
+	<script type="text/javascript">
+	
+    
+
+	var API_tests = (function() {
+		return {
+			document_title: 'port of Django\'s template syntax to JavaScript',
+			title: 'My Title',
+			description: 'Lorem ipsum dolor sit amet. Consectetur adipiscing elit. Praesent rutrum consequat turpis ac lobortis.',
+			body: '<h3>Lorem ipsum dolor sit amet</h3> <p>Consectetur <a href="http://www.com">adipiscing elit</a>.</p> <p>Praesent rutrum consequat turpis ac lobortis.</p>',
+			random_number: Math.floor(Math.random()* new Date().valueOf() ),
+			date: '05/10/2009 16:20:00',
+			date_format: '%DD, %d%S of %MM, %yy, %tp',
+			var1: false,
+			var2: true,
+			var3: false,
+			var4: true,
+			var5: false,
+			var6: true,
+			random_list: [ 'a','b','c','d','e' ],
+			items: [
+				{
+					name: 'The jQuery library',
+					id: '323'
+				},{
+					name: 'The Django Project',
+					id: '4234'
+				},{
+					name: 'The jQuery Community',
+					id: '3'
+				},{
+					name: 'The Django Community',
+					id: '84'
+				}			
+			]
+		};
+	})();
+	
+	function API(){
+		$('body').meelo('render',{
+			name: 'body',
+			data: API_tests
+		});
+	}
+	
+	var sort_test = {
+		data: {
+			items:[
+				{
+					'id': 0,
+					'title': 'A',
+					'type': 'Alpha',
+					'description': 'First'
+				},
+				{
+					'id': 4,
+					'title': 'D',
+					'type': 'Alpha',
+					'description': 'Fourth'
+				},
+				{
+					'id': 3,
+					'title': 'C',
+					'type': 'Alpha',
+					'description': 'Third'
+				},
+				{
+					'id': 1,
+					'title': 'B',
+					'type': 'Alpha',
+					'description': 'Second'
+				},
+				{
+					'id': 5,
+					'title': '0',
+					'type': 'Number',
+					'description': 'First'
+				},
+				{
+					'id': 7,
+					'title': '2',
+					'type': 'Number',
+					'description': 'Third'
+				},
+				{
+					'id': 6,
+					'title': '1',
+					'type': 'Number',
+					'description': 'Second'
+				}
+			]
+		},
+		init: function() {
+			
+			var template = new meelo.Template('\
+				{% regroup items by type as data_grouped %}\
+				{% for item_group in data_grouped %}\
+					<h4>{{ item_group.grouper }}</h4>\
+					{{ item_group.items | sort_reverse:"title" }}\
+					{% for item in item_group.items %}\
+						<p>Id: {{ item.id }} | Title: {{ item.title }} | {{ item.description }}</p>\
+					{% endfor %}\
+				{% endfor %}\
+			');
+			
+			$('body').append( template.render( this.data ) );
+			
+		}
+	}
+	
+	
+	$(function() {
+	//	console && console.time('Total (w/ DOM)');
+		API();
+	//	console && console.timeEnd('Total (w/ DOM)');
+		
+		sort_test.init();
+		
+	});
+	
+	
+	
+	</script>
+</head>
+<body>
+
+<h2>meelo-template Syntax</h2>
+
+<div>
+	<h3 class="heading"><code>new T</code></h3>
+	<p class="description">Create a new template from a text string. Returns a template object.</p>
+<div class="code full"><pre>
+var a_template = new T("my_template_body")
+</pre></div>
+
+<div class="code full"><pre>{%code%}
+var a_template = new T("<h1>{{ title }}</h1>","optional_template_name")
+{%endcode%}</pre></div>
+
+
+<div>
+	<h3 class="heading"><code>render</code></h3>
+	<p class="description">Renders the template with the data (context) provided.</p>
+<div class="code full"><pre>
+a_template.render({
+	title: 'Some title'
+}); 
+</pre></div>
+
+</div>
+
+</div>
+
+<h2>Syntax (jQuery)</h2>
+
+
+<div>
+	<h3 class="heading"><code>jQuery(selector).meelo(properties)</code></h3>
+	<p class="description">
+		Creates a new template and associates that template with selected DOM elements. Each DOM element can only be associated with one template.
+	</p>
+<div class="code full"><pre>
+$('body').meelo({
+	name: 'my_template', // a name for your template. optional
+	text: 'self', // template's text. leave undefined or specify "self" to use the selected element's innerHTML
+	data: { // the data this template will be using as a context (optional for now, required when parsing)
+		'hello': 'world!'
+	}
+});
+</pre></div>
+
+</div>
+
+<div>
+	<h3 class="heading"><code>jQuery(selector).meelo(method[,params])</code></h3>
+	
+<p class="description">
+	Calls the specified method of the element's template along with the additional parameters.
+</p>
+<div class="code full"><pre>
+$('body').meelo('render')
+</pre></div>
+<p class="description">
+	If the template does not exist is created 
+</p>
+<div class="code full"><pre>
+$('body').meelo('render',{
+	text: 'some template text', // overrides previously defined text, if any
+	data: { // overrides previous data
+		'bye': 'world!'
+	}
+})
+</pre></div>
+
+
+
+
+</div><!-- 
+
+<h2>Methods (API)</h2>
+  -->
+
+
+		
+<h2>Variables</h2>
+<p>
+	<strong>Syntax</strong>: <code>{%code%}{{ variable_or_string }}{%endcode%}</code>
+</p>
+
+<div>
+	<h3 class="heading"><code>as</code></h3>
+	<p class="description">Save a reference to the returned processed value</p>
+<div class="code"><pre>{% code %}
+{{ title as copy_of_title }} <br>
+{{ copy_of_title }}
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ title as copy_of_title }} <br>
+		{{ copy_of_title }}
+	</p>
+		
+	<p class="description">To prevent the variable from displaying use the <code>:eat</code> parameter</p>
+	
+<div class="code"><pre>{% code %}
+{{ title as copy_of_title:eat }}
+{{ copy_of_title }}
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ title as copy_of_title:eat }}
+		{{ copy_of_title }}
+	</p>
+	
+	<p class="description">You can also apply filters</p>
+	
+	<div class="code"><pre>{% code %}
+{{ "<em>My useless string</em>" | escape:"html" as my_string:eat }}
+{{ my_string }}
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ "<em>My useless string</em>" | escape:"html" as my_string:eat }}
+		{{ my_string }}
+	</p>
+
+</div>
+
+
+<h2>Variable Filters</h2>
+<p>
+	<strong>Syntax</strong>: <code>{%code%}{{ variable_or_string | optional_filter_name:"param,param2,.." }}{%endcode%}</code>
+</p>
+
+<div>
+	<h3 class="heading"><code>count</code></h3>
+	<p class="description">Returns length of array, or 0 if item was not an array</p>
+<div class="code"><pre>{% code %}
+{{ items | count }}
+{% endcode %}</pre></div>
+	<p class="example">
+{{ items | count }}
+	</p>
+<div class="code"><pre>{% code %}
+{{ var1 | count }}
+{% endcode %}</pre></div>
+	<p class="example">
+{{ var1 | count }}
+	</p>
+</div>
+
+<div>
+	<h3 class="heading"><code>upper</code></h3>
+	<p class="description">Returns variable in uppercase </p>
+<div class="code"><pre>{% code %}
+{{ title | upper }}
+{% endcode %}</pre></div>
+	<p class="example">
+{{ title | upper }}
+	</p>
+</div>
+
+<div>
+	<h3 class="heading"><code>lower</code></h3>
+	<p class="description">Returns variable in lowercase </p>
+<div class="code"><pre>{% code %}
+{{ title | lower }}
+{% endcode %}</pre></div>
+	<p class="example">
+{{ title | lower }}
+	</p>
+</div>
+
+<div>
+	<h3 class="heading"><code>title</code></h3>
+	<p class="description">Returns variable in titlecase (capitalise first letter of each word)</p>
+<div class="code"><pre>{% code %}
+{{ description | title }}
+{% endcode %}</pre></div>
+	<p class="example">
+{{ description | title }}
+	</p>
+</div>
+
+
+<div>
+	<h3 class="heading"><code>escape</code></h3>
+	<p class="description">Either call javascript's escape function or escape HTML</p>
+<div class="code"><pre>{% code %}
+{{ body | escape }}
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ body | escape }}
+	</p>
+<div class="code"><pre>{% code %}
+{{ body | escape:"html" }}
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ body | escape:"html" }}
+	</p>
+</div>
+
+
+<div>
+	<h3 class="heading"><code>encode</code></h3>
+	<p class="description">Javascript's encode function</p>
+<div class="code"><pre>{% code %}
+{{ window.location.toString() | encode }}
+{% endcode %}</pre></div>
+	<p class="example">
+{{ window.location.toString() | encode }}
+	</p>
+</div>
+
+
+
+<div>
+	<h3 class="heading"><code>filesizeformat</code></h3>
+	<p class="description">Convert value to a human readable file size format</p>
+<div class="code"><pre>{% code %}
+{{ "42342" | filesizeformat }}
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ "42342" | filesizeformat }}
+	</p>
+<div class="code"><pre>{% code %}
+{{ random_number | filesizeformat }}
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ random_number | filesizeformat }}
+	</p>
+</div>
+
+
+<div>
+	<h3 class="heading"><code>date</code></h3>
+	<p class="description">
+		Convert date according to specified parameters
+
+	</p>
+	<div class="code"><pre>{% code %}
+{{ date | date:" %dd/%mm/%yy " }}
+	{% endcode %}</pre></div>
+	<p class="example">
+		{{ date | date:" %dd/%mm/%yy " }}
+	</p>
+	<div class="code"><pre>{% code %}
+{{ date | date:"%tp" }}
+{% endcode %}</pre></div>
+	<p class="example">
+{{ date | date:"%tp" }}
+	</p>
+	<div class="code"><pre>{% code %}
+{{ "yesterday" | date: date_format  }}
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ "yesterday" | date: date_format }}
+	</p>
+</div>
+
+<div>
+	<h3 class="heading"><code>pluralise</code></h3>
+	<p class="description">Given an array returns plural suffix if array's length is > 1
+	</p>
+	<p>
+				<code>{%code%}{{ variable | pluralise: plural_suffix [singular_suffix] }}{%endcode%}</code>
+
+	</p>
+<div class="code"><pre>{% code %}
+How many titles? {{ title | count }} title{{ title | pluralise:"s" "x" }} ({{title}}) <br>
+{% endcode %}</pre></div>
+	<p class="example">
+		How many titles? {{ title | count }} title{{ title | pluralise:"s" "x" }} ({{title}}) <br>
+	</p>
+
+<div class="code"><pre>{% code %}
+How many items? {{ items | count }} item{{ items | pluralise:"z" }}
+{% endcode %}</pre></div>
+	<p class="example">
+		How many items? {{ items | count }} item{{ items | pluralise:"z" }}
+	</p>
+
+</div>
+
+
+<div>
+	<h3 class="heading"><code>truncate_words</code></h3>
+	<p class="description">Return only a specified number of words</p>
+	<div class="code"><pre>{% code %}
+{% filter truncate_words:"5" %}
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent rutrum consequat turpis ac lobortis.
+{%endfilter%}
+{% endcode %}</pre></div>
+	<p class="example">
+		{% filter truncate_words:"5" %}
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent rutrum consequat turpis ac lobortis.
+		{%endfilter%}
+	</p>
+</div>
+
+<div>
+	<h3 class="heading"><code>truncate_sentences</code></h3>
+	<p class="description">Return only a specified number of sentences. If adding text at the end, string must be specified with single quote (') instead of double (") [browser changes single for double in html attributes and fucks up string?], and cannot add variables.</p>
+	<div class="code"><pre>{% code %}
+		{% filter truncate_sentences:"1" '<a href="#more">More</a>' %}
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent rutrum consequat turpis ac lobortis. 
+{%endfilter%}
+{% endcode %}</pre></div>
+	<p class="example">
+		{% filter truncate_sentences:"1" '<a href="#more">More</a>' %}
+			Lorem ipsum dolor' sit amet, consectetur adipiscing elit. Praesent rutrum consequat turpis ac lobortis. 
+		{%endfilter%}
+	</p>
+</div>
+<div>
+	<h3 class="heading"><code>sort</code></h3>
+	<p class="description">Return only a specified number of sentences. If adding text at the end, string must be specified with single quote (') instead of double (") [browser changes single for double in html attributes and fucks up string?], and cannot add variables.</p>
+	<div class="code"><pre>{% code %}
+		{{ items|sort:"id" }}
+{% endcode %}</pre></div>
+	<p class="example">
+	{{ items|sort:"id"  }}
+	{% for item in items %}
+	{{ item.id }}
+	{% endfor %}
+	</p>
+</div>
+
+
+
+<div>
+	<h3 class="heading"><code>random</code></h3>
+	<p class="description">Returns a random item from the list</p>
+	<div class="code"><pre>{% code %}
+1. {{ random_list | random }}<br>
+2. {{ random_list | random }}<br>
+3. {{ random_list | random }}<br>
+4. {{ random_list | random }}
+{% endcode %}</pre></div>
+	<p class="example">
+		1. {{ random_list | random }}<br>
+		2. {{ random_list | random }}<br>
+		3. {{ random_list | random }}<br>
+		4. {{ random_list | random }}
+	</p>
+	<div class="code"><pre>{% code %}
+{{ items | random as random_item:eat }}
+Special thanks to: <strong>{{ random_item.name }}</strong>
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ items | random as random_item:eat }}
+		Special thanks to: <strong>{{ random_item.name }}</strong>
+	</p>
+</div>
+
+
+<div>
+	<h3 class="heading"><code>default</code></h3>
+	<p class="description">If the value is unavailable use the given default</p>
+	<div class="code"><pre>{% code %}
+{{ title | default:'No Title?' }}<br>
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ title | default:'No Title?' }}<br>
+	</p>
+	<div class="code"><pre>{% code %}
+{{ titlex | default: "Hello" }}<br>
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ titlex | default: "Hello" }}<br>
+	</p>
+	<div class="code"><pre>{% code %}
+{{ titlex | default: title }}<br>
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ titlex | default: title }}<br>
+	</p>
+	<div class="code"><pre>{% code %}
+{{ titlex | default: "" }}<br>
+{% endcode %}</pre></div>
+	<p class="example">
+		{{ titlex | default: "" }}<br>
+	</p>	
+</div>
+
+
+
+<h2>Template Tags</h2>
+<p><strong>Syntax</strong>: <code>{%code%}{% start_tag | optional_filter:"param,param2,.." | optional_filter2:"param,param2,.." %} content {% end_tag %} {%endcode%}</code></p>
+
+
+
+<div>
+	<h3 class="heading"><code>for</code></h3>
+	<p class="description">Loop through each item in an Array or Object</p>
+<div class="code"><pre>{% code %}
+	{% for item in items %}
+		{{ item.name }}<br>
+	{% endfor %}
+{% endcode %}</pre></div>
+	<p class="example">
+		{% for item in items %}
+			{{ item.name }}<br>
+		{% endfor %}
+	</p>
+
+</div>
+
+<div>
+	<h3 class="heading"><code>filter</code></h3>
+	<p class="description">apply filter(s) to its contents</p>
+<div class="code"><pre>{% code %}
+{% filter upper | escape:"html" %}
+	{{title}}<br>
+	some other text
+{% endfilter %}
+{% endcode %}</pre></div>
+	<p class="example">
+		{% filter upper | escape:"html" %}
+			{{title}}<br>
+			some other text
+		{% endfilter %}
+	</p>
+
+</div>
+
+<div>
+	<h3 class="heading"><code>now</code> (date)</h3>
+	<p class="description">Display date &amp; time with optional formatting</p>
+<div class="code"><pre>{% code %}
+{% now "%DD, %d%S of %MM, %yy, %tp"  %}
+{% endcode %}</pre></div>
+	<p class="example">
+		{% now "%DD, %d%S of %MM, %yy, %tp"  %}
+	</p>
+</div>
+
+<div>
+	<h3 class="heading">Conditional Statements (<code>if, elseif</code>)</h3>
+	<p class="description"> Parses both \{\{ variables \}\} and "strings"</p>
+<div class="code"><pre>{% code %}
+{% if "a" is "a" %}
+	- "a" is "a", said the if statement<br>
+{%endif%}
+{% endcode %}</pre></div>
+	<p class="example">
+	{% if "a" is "a" %}
+		- "a" is "a", said the if statement<br>
+	{%endif%}
+	</p>
+
+<div class="code"><pre>{% code %}
+{% if title not is "title" %}
+	- {{ title }} is not "title"<br>
+{%endif%}
+{% endcode %}</pre></div>
+	<p class="example">
+		{% if title not is "title" %}
+			- {{ title }} is not "title"<br>
+		{%endif%}
+	</p>
+
+<div class="code"><pre>{% code %}
+{% if title is "My Title" %}
+	- {{ title }} is "My Title"<br>
+{%endif%}
+{% endcode %}</pre></div>
+	<p class="example">
+		{% if title is "My Title" %}
+			- {{ title }} is "My Title"<br>
+		{%endif%}
+	</p>	
+
+</div>
+
+
+<div>
+	<h3 class="heading"><code>firstof</code></h3>
+	<p class="description">Given a string of space separated values	return the first value that is not false or null or empty</p>
+<div class="code"><pre>{% code %}
+{% firstof var1 var3 var5 "default value" %}
+{% endcode %}</pre></div>
+	<p class="example">
+		- {% firstof var1 var3 var5 "default value" %}<br>
+	</p>
+
+<div class="code"><pre>{% code %}
+{% firstof title var2 "default value" %}
+{% endcode %}</pre></div>
+	<p class="example">
+		- {% firstof title var2 title "default value" %}
+	</p>	
+</div>
+
+
+
+
+
+<div>
+	<h3 class="heading"><code>cycle</code></h3>
+	<p class="description">Successively return one of the values specified whenever the same cycle tag is called</p>
+	<div class="code"><pre>{% code %}
+1. {% cycle title  "red" "green" "blue" %}
+2. {% cycle title  "red" "green" "blue" %}
+3. {% cycle title  "red" "green" "blue" %}
+4. {% cycle title  "red" "green" "blue" %}
+{% endcode %}</pre></div>
+	<p class="example">
+		1. {% cycle title "red" "green" "blue" %}<br>
+		2. {% cycle title  "red" "green" "blue" %}<br>
+		3. {% cycle title  "red" "green" "blue" %}<br>
+		4. {% cycle title  "red" "green" "blue" %}
+	</p>
+</div>
+<hr>
+
+<h3>Data</h3>
+{% data %}
+
+
+
+</body>
+</html>

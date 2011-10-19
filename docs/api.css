@@ -1,0 +1,52 @@
+	h2 {
+		font-weight:normal;
+		color:#fff;
+		background-color: #335C33;
+		clear:both;
+	}
+	h3.heading {
+		margin:30px 0 5px 0;
+		clear:both;
+	}
+	.code {
+		background-color: #eee;
+		padding:0px 10px;
+		border:1px solid #ccc;
+		float:left;
+		clear:left;
+	}
+	.example {
+		border:1px solid #335C33;
+		background-color: #BFD4B4;
+		color:#333;
+		padding:10px;
+		float:left;
+		clear:right;
+	}
+	.description {
+		padding:15px 0 0;
+		margin:0;
+		clear:both;
+	}
+	.code,
+	.example{
+		margin:5px;
+		width:45%;
+		overflow:auto;
+	}
+	div:after,
+	.description:before,
+	.description:after,
+	.code:before,
+	.example:after{
+		content:' ';
+		width:100%;
+		display:block;
+		clear:both;
+		float:none;
+		line-height:0;
+	}
+	.code.full {
+		float:none;
+		width:auto;
+	}
