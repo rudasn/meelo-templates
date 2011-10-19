@@ -767,7 +767,7 @@
 		return T.trim(value);
 	};
 	T.trim = function(value) {
-		return T.toString(value).replace(/ +/g,' ').replace(/\s+$/,'').replace(/^\s+/,'');
+		return T.toString(value).replace(/\s+/g,' ').replace(/\s+$/,'').replace(/^\s+/,'');
 	};
 	T.random = function(value) {
 		return (value && value.constructor === Array)
@@ -1098,7 +1098,6 @@
 			locales: {
 				default_lang: function() {
 					return 2057;
-					//return ((typeof odSite !== 'undefined' && odSite.Locale) ? odSite.Locale : 2057)+'';
 				},
 				dates: {
 					'2057': { // EN
